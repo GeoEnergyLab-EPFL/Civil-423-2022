@@ -26,33 +26,40 @@ f_x = zeros(length(mesh.nodes),1);
 f_y=f_x;
 
 
+ % check 
+ n_mat=length(unique(mesh.id)); % number of mat in the mesh
+ 
+
+if length(cond(:,1)) ~= n_mat
+        error('number of mat and size of cond list not equal ');       
+end
+
 % loop over all the element
 for e=1:length(mesh.connectivity)
     
      % get nodes of element e
-     n_e=-------
+     n_e = mesh.connectivity(e,:);
      %corresponds coordinates
-    corr==-------
-    %  mat_id  of the element....
-    m_id=-------
-    % get element conductivity
-    cond_e=-------
-    % create local Element object   (use the functino ElementTri3
+     coor = mesh.nodes(n_e,:);
      
-     local_elt=ElementTri3( -------)
+      m_id = mesh.id(e);
+      cond_e=cond(m_id);
+      
+     % creat Element object  
+     
+     % here we would have to do a switch for Tri6 mesh
+     local_elt=ElementTri3(coor,simultype);
 
-     % get the corresponding local solution - scalar dof mapping
+     % corresponding local solution - scalar dof mapping
      usol = solution(n_e);
      
-     %  get the projected element flux
     [fel_x,fel_y]=ProjectElementFlux(local_elt,cond_e,usol);
      
-    % add the contribution to the global vector
-    f_x(-------) = f_x(-------)+fel_x ;
-    f_y(-------) = f_y(-------)+fel_y ;
+    f_x(n_e) = f_x(n_e)+fel_x ;
+    f_y(n_e) = f_y(n_e)+fel_y ;
     
 end
-% chech NaN  (this is for unconfined flow / seepage boundary)
+% chech nan for unconfined flow
 [k]=find(isnan(f_x)==1);
 f_x(k)=0.;
 [k]=find(isnan(f_y)==1);
@@ -63,13 +70,13 @@ f_y(k)=0.;
 
 % 3.a for x
 
-q_x = -------
+q_x = M\f_x;
 
 % 3.b for y;
 
-q_y = -------
+q_y = M\f_y;
 
-% return both component
+
 q = [ q_x q_y];
 
 
