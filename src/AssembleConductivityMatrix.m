@@ -54,6 +54,7 @@ for e=1:length(mesh.connectivity)
      
      % get element conductivity matrix
      cond_e=cond(m_id);
+     
      Cel=ElementConductivityMatrix(local_elt,cond_e);
 
     % 
