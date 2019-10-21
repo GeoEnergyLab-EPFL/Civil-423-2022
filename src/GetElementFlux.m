@@ -15,7 +15,6 @@ function [qel]=GetElementFlux(eltObj,Cond,usol)
         
         %  Single Gauss point (Constant gradient for linear triangle)
         xeta=[1./3 1./3];
-        Wl=1./2;
         [DNaDx,j]=GradN(xeta,eltObj);
         
         qel=-Cond*DNaDx*usol;
@@ -27,15 +26,14 @@ function [qel]=GetElementFlux(eltObj,Cond,usol)
         xeta=[1./6 1./6;
             2./3 1./6;
             1./6 2./3];
-        wl=[1./3,1./3,1./3]; % Why one third?
         
-        [DNaDx,j]=GradN(xeta(1,:),eltObj);
-        qel=-wl(1)*Cond*DNaDx*usol;
+        qel = zeros(length(xeta(:,1)),2);
         
-        for i = 2:length(xeta(:,1))
-            [DNaDx,j]=GradN(xeta(i,:),eltObj);
-            qel=qel -wl(i)*Cond*DNaDx*usol;
+        for i = 1:length(xeta(:,1))
+            [DNaDx]=GradN(xeta(i,:),eltObj);
+            qel(i,:)=-Cond*DNaDx*usol;
         end
+        qel = mean(qel);
    else
         error('Element not yet implemented');
     end

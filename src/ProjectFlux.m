@@ -15,7 +15,7 @@ function [q]=ProjectFlux(mesh,simultype,cond,solution)
 % component of the flux, 
 
 %  Union_elt (\int N^T N   ) \times Q_x =
-%            Union_elt \int (-N^T (Cond.Grad N \times solution)_x ) 
+%  Union_elt \int (-N^T (Cond.Grad N \times solution)_x ) 
 % and same for y
 
 % Step 1 : creation of the mesh matrix 
@@ -25,10 +25,16 @@ function [q]=ProjectFlux(mesh,simultype,cond,solution)
 f_x = zeros(length(mesh.nodes),1);
 f_y=f_x;
 
-
- % check 
- n_mat=length(unique(mesh.id)); % number of mat in the mesh
+% check 
+n_mat=length(unique(mesh.id)); % number of mat in the mesh
  
+[~, nc]=size(mesh.connectivity);
+switch nc
+    case 3
+        eltype='Tri3';
+    case 6
+        eltype='Tri6';
+end
 
 if length(cond(:,1)) ~= n_mat
         error('number of mat and size of cond list not equal ');       
@@ -42,13 +48,18 @@ for e=1:length(mesh.connectivity)
      %corresponds coordinates
      coor = mesh.nodes(n_e,:);
      
-      m_id = mesh.id(e);
-      cond_e=cond(m_id);
+     m_id = mesh.id(e);
+     cond_e=cond(m_id);
       
      % creat Element object  
      
-     % here we would have to do a switch for Tri6 mesh
-     local_elt=ElementTri3(coor,simultype);
+     % --- Switch in function of element type
+     switch eltype
+         case 'Tri3'
+             local_elt=ElementTri3(coor,simultype);
+         case 'Tri6'
+             local_elt=ElementTri6(coor,simultype);
+     end
 
      % corresponding local solution - scalar dof mapping
      usol = solution(n_e);

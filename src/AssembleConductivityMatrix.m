@@ -40,11 +40,7 @@ for e=1:length(mesh.connectivity)
      
      m_id = mesh.id(e);
      
-     % create Element object  
-     % here would have to do a switch for Tri6 mesh
-     local_elt=ElementTri3(coor,simultype);
-     % creat Element object
-     % --- Switch in function of element type
+     % --- Switch in function of element type to create element
      switch eltype
          case 'Tri3'
              local_elt=ElementTri3(coor,simultype);
@@ -54,7 +50,6 @@ for e=1:length(mesh.connectivity)
      
      % get element conductivity matrix
      cond_e=cond(m_id);
-     
      Cel=ElementConductivityMatrix(local_elt,cond_e);
 
     % 
