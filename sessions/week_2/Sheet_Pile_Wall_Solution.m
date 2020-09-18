@@ -70,19 +70,11 @@ sheet_pile=find((mesh.nodes(:,1)==x_wall-t_wall/2 & mesh.nodes(:,2)>=y_wall)...
 % Now you have to complete the code by finding the nodes related to the
 % remaining boundaries
 
-%left_edge=------
-%right_edge=------
-%bottom_edge=------
-%top_ground=------
-%top_excavation=------
-
-%%% DELETE!!!
 left_edge=find(mesh.nodes(:,1)==0);
 right_edge=find(mesh.nodes(:,1)==x_exc);
 bottom_edge=find(mesh.nodes(:,2)==0);
 top_ground=find(mesh.nodes(:,2)==y_ground);
 top_excavation=find(mesh.nodes(:,2)==y_exc & mesh.nodes(:,1)>=x_wall);
-%%% DELETE!!!
 
 % plotting boundary nodes
 
@@ -110,19 +102,14 @@ plot(mesh.nodes(top_excavation,1),mesh.nodes(top_excavation,2),'ob');
 
 % You have to define now the boundary condition at the ground level 
 
-%h_top_ground=-------
+h1=0; % we can define any piezometric head h1
+h_top_ground=h1+mesh.nodes(top_ground,2);
 
 % ... and now the boundary condition at the excavation bottom
 
-%h_top_excavation=--------
-
-%%% DELETE!!!
-h1=0; % we can define any piezometric head h1
-h_top_ground=h1+mesh.nodes(top_ground,2);
-% top_exc p = gamma_w h2 --> h = h2 + y_exc
 h2=0; % we can define any piezometric head h2
 h_top_excavation=h2+mesh.nodes(top_excavation,2);
-%%% DELETE!!!
+%top_exc p = gamma_w h2 --> h = h2 + y_exc
 
 % Deleting duplication of fixed nodes. 
 [nodes_fixed, ia, ic]=unique([top_ground;top_excavation]) ; 
@@ -157,20 +144,21 @@ nodes_unknows=setdiff(1:length(mesh.nodes),nodes_fixed)';
 % Now, you have to complete the code and solve the matrix system 
 
 % Compute the force vector
-%f = ---------
+f = -C(nodes_unknows,nodes_fixed)*h_fixed;
 
 % Compute the unknown piezometric heads
-%h_unknows = -----------
-
-% DELETE!!!
-f = -C(nodes_unknows,nodes_fixed)*h_fixed;
 h_unknows = C(nodes_unknows,nodes_unknows)\f;
-% DELETE!!!
 
 % And finally we build the solution for all the nodes
 h = zeros(length(mesh.nodes(:,1)),1);
 h(nodes_unknows)=h_unknows;
 h(nodes_fixed)=h_fixed;
+
+% Exit gradient
+% The value of the exit gradient is...
+
+exitnode = find(mesh.nodes(:,1)==x_wall+t_wall/2 & mesh.nodes(:,2)==y_exc);
+Exit_Gradient=Q(exitnode,2)
 
 % plotting solution
 figure(4)
@@ -198,12 +186,6 @@ trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,2))
 
 figure(7)
 quiver(mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1),Q(:,2),'AutoScaleFactor',3)
-
-% Exit gradient
-% The value of the exit gradient is...
-
-exitnode = find(mesh.nodes(:,1)==x_wall+t_wall/2 & mesh.nodes(:,2)==y_exc);
-Exit_Gradient=Q(exitnode,2)
 
 %% Plotting equipotential lines and streamlines (need to be improved and 
 % delete the part of the graph that is not part of the domain)

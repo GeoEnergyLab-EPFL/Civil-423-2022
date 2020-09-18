@@ -27,7 +27,7 @@ node_outer = [ 0 0 ; x_exc 0 ; x_exc y_exc ; x_wall+t_wall/2 y_exc ;...
 edge_outer = [];
 
 for e=1:7
-edge_outer = [ edge_outer ; e e+1 ];
+    edge_outer = [ edge_outer ; e e+1 ];
 end
 edge_outer = [ edge_outer ; 8  1 ];
 
@@ -45,11 +45,11 @@ node = [node_outer;node_constraints];
 edge = [edge_outer;edge_constraints];
 part{1} = 1:8; % edges being part of outer boundary to call refine2 function
 
-% call mesh-generator MESH2D - download it at https://ch.mathworks.com/matlabcentral/fileexchange/25555-mesh2d-delaunay-based-unstructured-mesh-generation
- opts.kind = 'delfront';
-% opts.rho2 = +1.0 ;
-% opts.siz1 = 1.33;
-% opts.siz2 = 1.3;
+% Call the mesh generator
+opts.kind = 'delfront';
+opts.rho2 = +1.0 ;
+opts.siz1 = 1.33;
+opts.siz2 = 1.3;
  
 h_x = 0.05; %% Max elt area -> control the refinement of the mesh here
 [mesh.nodes,mesh.edge, mesh.connectivity,mesh.id] = refine2(node,edge,...

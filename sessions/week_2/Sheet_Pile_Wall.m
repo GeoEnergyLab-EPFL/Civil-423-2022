@@ -29,7 +29,7 @@ node_coor = [ 0 0 ; x_exc 0 ; x_exc y_exc ; x_wall+t_wall/2 y_exc ;...
 edge = [];
 
 for e=1:7
-edge = [ edge ; e e+1 ];
+    edge = [ edge ; e e+1 ];
 end
 edge = [ edge ; 8  1 ];
 
@@ -70,11 +70,13 @@ sheet_pile=find((mesh.nodes(:,1)==x_wall-t_wall/2 & mesh.nodes(:,2)>=y_wall)...
 % Now you have to complete the code by finding the nodes related to the
 % remaining boundaries
 
-left_edge=------
-right_edge=------
-bottom_edge=------
-top_ground=------
-top_excavation=------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+left_edge % =
+right_edge % =
+bottom_edge % =
+top_ground % =
+top_excavation % =
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % plotting boundary nodes
 
@@ -100,13 +102,15 @@ plot(mesh.nodes(top_excavation,1),mesh.nodes(top_excavation,2),'ob');
 
 % <<<Reminder: h = p/gamma_w + y>>>
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You have to define now the boundary condition at the ground level 
 
-h_top_ground=-------
+h_top_ground % =
 
 % ... and now the boundary condition at the excavation bottom
 
-h_top_excavation=--------
+h_top_excavation % =
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Deleting duplication of fixed nodes. 
 [nodes_fixed, ia, ic]=unique([top_ground;top_excavation]) ; 
@@ -122,6 +126,7 @@ h_fixed=h_aux(ia);
 % computing conductivity matrix
 
 K=[1]; % Hydraulic conductivity of each material, [L/T]
+
 % In our case is an scalar, since we are using only one material and we
 % assume that it is isotropic and homogeneous
 [C] = AssembleConductivityMatrix(mesh,K,'2D'); % Note: the assembly of 
@@ -141,17 +146,26 @@ nodes_unknows=setdiff(1:length(mesh.nodes),nodes_fixed)';
 
 % Now, you have to complete the code and solve the final system 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compute the force vector
-f = ---------
+f % =
 
 % Compute the unknown piezometric heads
-h_unknows = -----------
+h_unknows % =
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % And finally we build the solution for all the nodes by gluing the solved
 % h and the dirichlet boundary conditions
 h = zeros(length(mesh.nodes(:,1)),1);
 h(nodes_unknows)=h_unknows;
 h(nodes_fixed)=h_fixed;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exit gradient
+% The value of the exit gradient is...
+exitnode % =
+Exit_Gradient % =
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % plotting solution
 figure(4)
