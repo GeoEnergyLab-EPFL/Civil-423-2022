@@ -1,6 +1,6 @@
 % Earth dams unconfined flow
 % with fixed point iterations with under-relaxation
-%% Mesh
+%% Mesh 
 
 % geometry according to figures 1 and 2
 b=8;hd=40;hw=35;m=2;m1=2;
@@ -61,7 +61,7 @@ plot(mesh.nodes(nodes_unsat,1),mesh.nodes(nodes_unsat,2),'or');
 hold on
 
 % Here you have to impose the boundary conditions of the problem
- 
+
 % left unsat hydrostatic -> p=gamma_w (hw-y) -> h= (hw-y) + y == hw
 
 h_left_unsat=mesh.nodes(left_edge_unsat,2);
@@ -113,42 +113,42 @@ while (k<iter_max) && (err>tolerance)
     else
         beta = 0.9;
     end
-    
+
     [C] = AssembleConductivityMatrix(mesh,k_current,'2D');
-    
+
     % First, we have to separate the nodes where the piezometric head is
     % unknown from nodes where the piezometric head is fixed (because of the
     % boundary conditions).
-    
+
     eq_to_solve=setdiff([1:length(mesh.nodes)],nodes_fixed)';
-        
+
     % Compute the force vector
     f = -C(eq_to_solve,nodes_fixed)*h_set ;
-    
+
     % Compute the unknown piezometric heads at each step
     h_aux = C(eq_to_solve,eq_to_solve)\f;
-    
+
     % Solution of the previous step
     h_res_1=h_res;
-    
+
     % glue back fixed and other nodes the solution of the current step
     h_res(nodes_fixed)=h_set;  % not really needed as outsie the loop
     h_res(eq_to_solve)=h_aux;
-    
+
     % Under-Relax the solution of the current step by using under-relaxation
     h_res=(1-beta)*h_res_1+beta*h_res;
     % Compute pressure from head
     gammaw=10;
     p_res = gammaw*(h_res - mesh.nodes(:,2));
-    
+
     % check constraints on pressure on -- unsat boundary
-    % check via head 
-    % set of nodes on the unsat boundary where pressure is >0 
+    % check via head
+    % set of nodes on the unsat boundary where pressure is >0
     % will need to be fixed to p=0
-    ic = find(h_res(nodes_unsat)>mesh.nodes(nodes_unsat,2)); 
-    
-    % check  flux are < 0 on seeping part of the unsat boundary 
-    ff=C*h_res; 
+    ic = find(h_res(nodes_unsat)>mesh.nodes(nodes_unsat,2));
+
+    % check  flux are < 0 on seeping part of the unsat boundary
+    ff=C*h_res;
     % get set of nodes where p> 0 and qn <0
     if_o = find(ff(nodes_unsat(ic))<0);
     i_fix_u=ic(if_o);
@@ -159,19 +159,18 @@ while (k<iter_max) && (err>tolerance)
 
     % Compute new the relative permeability of each element
     [k_current,pm]=ComputeRelPerm(mesh,p_res,eps_perm);
-    
+
     [jk]=find(isnan(k_current));
     if ~isempty(jk)
         disp('error - Nan Perm');
     end
-    
-    %<<<DELETE
-    
+
+
     % Compute the error of the current step
     err=median(abs(h_res-h_res_1)./h_res);
-    
+
     disp(['max relative change at its ', num2str(k), ' is : ',num2str(err)]);
-    
+
 end
 
 
@@ -221,22 +220,22 @@ Qelt=zeros(length(mesh.connectivity),2);
 centroids =zeros(length(mesh.connectivity),2);
 % loop over all the element
 for e=1:length(mesh.connectivity)
-    
+
     % get nodes of element e
     n_e = mesh.connectivity(e,:);
     %corresponds coordinates
     coor = mesh.nodes(n_e,:);
     centroids(e,:)=mean(coor);
     % create Element object
-    
+
     % here we would have to do a switch for Tri6 mesh
     local_elt=ElementTri3(coor,'2D');
-    
+
     % corresponding local solution - scalar dof mapping
     usol = phi_res(n_e);
     [qel]=GetElementFlux(local_elt,1,usol);
     Qelt(e,:)=qel';
-    
+
 end
 
 % scatter3(centroids(:,1),centroids(:,2),Qelt(:,1),...
