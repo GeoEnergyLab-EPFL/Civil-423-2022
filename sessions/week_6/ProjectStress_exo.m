@@ -1,4 +1,4 @@
-function [S]=ProjectStress(mesh,simultype,params,solution)
+function [S]=ProjectStress_exo(mesh,simultype,params,solution)
 % Function to project the stresses (derivatives of the solution) at the 
 % nodes of the mesh from the knowledge of the solution at the nodes 
 %   sigma ==  D B solution

@@ -205,8 +205,8 @@ ylabel(' u_z [m] ');
 % <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 % We extract the axis of symmetry
-left_boundary = % axis of
-                % symmetry
+left_boundary  % axis of
+               % symmetry
 
 [ur_l,uz_l]=BoussinesqSolution_PointForce(mesh.nodes(left_boundary,1),...
     mesh.nodes(left_boundary,2),soil(1),soil(2)); % Calculate the solution
