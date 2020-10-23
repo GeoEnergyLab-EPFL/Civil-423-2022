@@ -75,7 +75,7 @@ elseif isa(eltObj,'ElementTri6')
             kel=(2*pi*X(1))*Wl(1)*j*(N'*rho*N);
             for i=2:length(Wl)
                 [N]=Na(xeta(i,:),eltObj);
-                 [X]=Mapx(xeta(i,:),eltObj);
+                [X]=Mapx(xeta(i,:),eltObj);
                 kel=kel+(2*pi*X(1))*Wl(i)*j*(N'*rho*N);
             end
     end

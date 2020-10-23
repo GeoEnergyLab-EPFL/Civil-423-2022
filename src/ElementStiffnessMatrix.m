@@ -40,13 +40,6 @@ function [kel]=ElementStiffnessMatrix(eltObj,D)
              1/6 2/3];
          Wl=[1/6 1/6 1/6];
         
-%          xeta=[1/3 1/3;
-%             1/5 1/5;
-%             3/5 1/5;
-%             1/5 3/5;];
-%             
-%         Wl=[-27/96, 25/96., 25./96, 25./96.];
-        
         switch eltObj.type
             case '2D'
                 % get the b matrix
