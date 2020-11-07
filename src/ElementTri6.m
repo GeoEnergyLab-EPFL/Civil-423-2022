@@ -93,7 +93,7 @@ classdef ElementTri6
         % for Laplacian
         function [DNaDx,j]=GradN(xil,obj)
             
-            DNaDxi = [4*xil(1)-1, 0,    -3+4*xil(1)+4*xil(2), 4*xil(2),...
+             DNaDxi = [4*xil(1)-1, 0,    -3+4*xil(1)+4*xil(2), 4*xil(2),...
                 -4*xil(2), 4*(1-2*xil(1)-xil(2));...
                 0,4*xil(2)-1,-3+4*xil(2)+4*xil(1),...
                 4*xil(1),4*(1-2*xil(2)-xil(1)),-4*xil(1);];
@@ -118,17 +118,6 @@ classdef ElementTri6
             DxiDx = inv(J);  % inverse
             j=det(J);
             
-        end
-        
-        % Element side length
-        function [l]=sidelength(ind,obj)
-            if ind(1) ==1 && ind(2) == 2
-                [l]=norm(obj.xae(1,:)-obj.xae(2,:));
-            elseif ind(1) ==1 && ind(2) == 3
-                [l]=norm(obj.xae(1,:)-obj.xae(3,:));
-            else
-                [l]=norm(obj.xae(2,:)-obj.xae(3,:));
-            end
         end
         
     end

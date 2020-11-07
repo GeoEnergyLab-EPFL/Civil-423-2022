@@ -100,7 +100,7 @@ hold on;
 plot(meshP.nodes(circle,1),meshP.nodes(circle,2),'*b')
 
 %% Initial condition
-%%As an initial condition we will set a uniform pressure field without
+%%As an initial condition we will set a unifrom pressure field withou
 %%deviatoric stresses all equal to -1. Note that it would also be possible
 %%to define the initial state by a traction applied on the boundary which
 %%results in the same final result.

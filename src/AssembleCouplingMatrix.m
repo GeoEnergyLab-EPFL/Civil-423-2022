@@ -1,4 +1,4 @@
-function [Ce] = AssembleCouplingMatrix_exo(meshE,meshP,alpha,simultype)
+function [Ce] = AssembleCouplingMatrix(meshE,meshP,alpha,simultype)
 %AssembleCouplingMatrix :: assemble the coupling matrix for poroelastic
 % problems for a mesh structure.
 %   mesh structure with the following fields (node, connectivity, edge, id)
@@ -57,17 +57,13 @@ for e=1:length(meshP.connectivity(:,1))
              local_elt_P=ElementTri6(coorP,simultype);
      end
 
-% <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
      % get element conductivity matrix
-     Ceel=ElementCouplingMatrix_exo(local_elt_E,local_elt_P,alpha);
-% <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     
-    % 
+     Ceel=ElementCouplingMatrix(local_elt_E,local_elt_P,alpha);   
+    
     Ce(n_dof_e,n_dof_p)=Ce(n_dof_e,n_dof_p)+Ceel;
     
  end
  
 
 end
-
 

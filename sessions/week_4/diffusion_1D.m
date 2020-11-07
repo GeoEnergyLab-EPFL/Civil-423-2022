@@ -4,7 +4,7 @@
 % problem of transient flow by the finite volume / finite difference method 
 % and using the theta-method for the time integration scheme.
 
-% The problem to solve is the pore pressure diffusion of the Terzaghi's
+% The problem to solve is the pore pressure diffusion of the Terzagui's
 % consolidation problem.
 
 %% Mesh
