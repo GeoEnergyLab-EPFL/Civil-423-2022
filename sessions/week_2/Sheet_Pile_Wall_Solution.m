@@ -54,6 +54,7 @@ figure(1);
         'facecolor','w', ...
         'edgecolor',[.1,.1,.1], ...
         'linewidth',2.0) ;
+title(' Mesh ');
  
 %% Boundary conditions
 
@@ -78,7 +79,6 @@ top_excavation=find(mesh.nodes(:,2)==y_exc & mesh.nodes(:,1)>=x_wall);
 
 % plotting boundary nodes
 
-figure(2)
 plot(mesh.nodes(sheet_pile,1),mesh.nodes(sheet_pile,2),'or');
 hold on
 plot(mesh.nodes(left_edge,1),mesh.nodes(left_edge,2),'ob');
@@ -154,15 +154,10 @@ h = zeros(length(mesh.nodes(:,1)),1);
 h(nodes_unknows)=h_unknows;
 h(nodes_fixed)=h_fixed;
 
-% Exit gradient
-% The value of the exit gradient is...
-
-exitnode = find(mesh.nodes(:,1)==x_wall+t_wall/2 & mesh.nodes(:,2)==y_exc);
-Exit_Gradient=Q(exitnode,2)
-
 % plotting solution
-figure(4)
+figure(2)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),h)
+title(' Hydraulic head - h');
 
 %% Projection for flux
 
@@ -171,26 +166,37 @@ trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),h)
 
 Q =ProjectFlux(mesh,'2D',K,h); %[L/s]
 
-% plotting flux_x
+% Exit gradient
+% The value of the exit gradient is...
 
-figure(5)
+exitnode = find(mesh.nodes(:,1)==x_wall+t_wall/2 & mesh.nodes(:,2)==y_exc);
+Exit_Gradient=Q(exitnode,2)
+
+% plotting flux_x
+figure(3)
+
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1))
+title(' Proj Q_x - linear elt');
 
 % plotting flux_y
 % You can see the value for the exit gradient in this graph
 
-figure(6)
+figure(4)
+
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,2))
+title(' Proj Q_y - linear elt');
 
 % plotting flux as vector
 
-figure(7)
+figure(5)
 quiver(mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1),Q(:,2),'AutoScaleFactor',3)
+title(' Flux as a vector ');
 
 %% Plotting equipotential lines and streamlines (need to be improved and 
 % delete the part of the graph that is not part of the domain)
 
-figure(8)
+figure(6)
+
 PlotEquipotential(h,mesh.nodes,y_exc+h2:.01:y_ground+h1,.005)
 hold on
 startx=0:.05:x_wall;starty=y_ground*ones(size(startx));
@@ -200,6 +206,7 @@ patch('faces',edge,'vertices',node_coor, ...
         'facecolor','w', ...
         'edgecolor',[.1,.1,.1], ...
         'linewidth',2.0) ;
+title(' Streamlines ');
 
 
 function PlotEquipotential(solution,coor,lines,resolution)
