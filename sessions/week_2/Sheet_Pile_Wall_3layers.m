@@ -75,7 +75,7 @@ figure(1);
     hold on;
     plot(node_constraints(5:6,1),node_constraints(5:6,2),'-',...
         'color','black','linewidth',2.0)
- 
+title(' Mesh ');
 %% Boundary conditions
 
 % Finding boundary nodes
@@ -91,7 +91,6 @@ sheet_pile=find((mesh.nodes(:,1)==x_wall-t_wall/2 & mesh.nodes(:,2)>=y_wall)...
 
 % plotting boundary nodes
 
-figure(2)
 plot(mesh.nodes(left_edge,1),mesh.nodes(left_edge,2),'ob');
 hold on
 plot(mesh.nodes(right_edge,1),mesh.nodes(right_edge,2),'ob');
@@ -139,7 +138,7 @@ e3=find(mesh.id==3); % elements belonging to material 3
 
 % plotting different materials (layers)
 
-figure(3);
+figure(2);
     patch('faces',mesh.connectivity(e1,:),'vertices',mesh.nodes, ...
         'facecolor','w','edgecolor','r') ;
     hold on; axis image off;
@@ -153,6 +152,7 @@ figure(3);
         'facecolor','w', ...
         'edgecolor',[.1,.1,.1], ...
         'linewidth',2.0) ;
+title(' Different layers ');
 
 %% Solution for piezometric head, h [m]
 
@@ -174,8 +174,9 @@ h(unknowns)=h_unknows;
 h(nodes_fixed)=h_fixed;
 
 % plotting solution
-figure(4)
+figure(3)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),h)
+title(' Piezometric head - h ');
 
 %% Projection for flux
 
@@ -185,18 +186,21 @@ Q =ProjectFlux(mesh,'2D',K,h); %[L/s]
 
 % plotting flux_x
 
-figure(5)
+figure(4)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1))
+title(' Horizontal flux - Q_x ');
 
 % plotting flux_y
 
-figure(6)
+figure(5)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,2))
+title(' Vertical flux - Q_y ');
 
 % plotting flux as vector
 
-figure(7)
+figure(6)
 quiver(mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1),Q(:,2),'Color','black','AutoScaleFactor',4)
+title(' Fluid Flux ');
 
 % Exit gradient
 
