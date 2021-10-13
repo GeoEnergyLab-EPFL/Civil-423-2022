@@ -24,11 +24,11 @@ L=sparse(ne,ne); % Initialization of L Matrix
 
 % Now you have to fill the L Matrix
 
-% DELETE!!!
+% We loop over all lines || columns and fill in the parts
 for e=1:ne
        L(e,e)=-2.; % diagonal term     
     switch e
-        case 1    % first cell has no cell to its left
+        case 1    % first cell has the ghost cell to its left
            L(e,e+1)=1;
         case  ne  % last cell has no outgoing flux (v_i+1/2=0)
             L(e,e-1)=1;
@@ -39,8 +39,9 @@ for e=1:ne
     end
 end
 
-L=L/h^2.;
-% DELETE!!!
+% Now we transform L to the D of the notes we have.
+L=L/h^2.; 
+
 %% Theta-method and numerical solution
 
 theta=.8; % theta parameter - time integration scheme choice (theta in [0,1])
@@ -61,18 +62,23 @@ Analytical(1,:)=po; % Initial condition
 
 Id =speye(ne,ne); % Identity matrix necessary to solve by theta-method
 
+% Loop where we solve for each timestep
 j=0;
 while tn<tMax && j<=iter_max
-    % DELETE!!!
     j=j+1;
     tn=tn+time_step; % Increase the time by delta t
-    dp=(Id-theta*time_step*L)\(time_step*L*po) ; % Compute the increment of pressure dp
+    dp=(Id-theta*time_step*L)\(time_step*L*po);  % Compute the increment of
+                                                 % pressure dp
     po=po+dp; % Adding to the previous pressure
-    pressure(j+1,:)=po; % Store the results in the corresponding pressure matrix
+    pressure(j+1,:)=po; % Store the results in the corresponding pressure
+                        % matrix
     time(j+1)=tn; % Store the time in the corresponding vector
-    Analytical(j+1,:)=terzaghi_solution(xs,tn,l,c,p_o,900)'; % Compute the corresponding analytical
-    %solution at the center of each element / cell for the given time tn
-    % DELETE!!!
+    
+    % Compute the corresponding analytical solution at the center of each
+    % element / cell for the given time tn
+    Analytical(j+1,:)=terzaghi_solution(xs,tn,l,c,p_o,900)'; 
+    
+
 end
 
 %% Graphics - Numerical versus analytical solution
@@ -80,22 +86,24 @@ end
 % Plot pressure profile at different times
 
 figure(1)
-title('Pressure profile at different times'); hold on;
+hold on;
 h1=plot(xs,pressure(1:round(length(time)/10):length(time),:),'.-k'); hold on;
 h2=plot(xs,Analytical(1:round(length(time)/10):length(time),:),'-r'); hold on;
 xlabel('x');
 ylabel('Pressure');
+title('Pressure profile at different times');
 legend([h1(1),h2(1)],'Numerical','Analytical');
 
 % Plot pressure versus time at a given element / cell
 
 figure(2)
 cell_id = 20; % element / cell number to be plotted
-title(strcat('Pressure versus time at  cell #',string(cell_id))); hold on;
+hold on;
 plot(time,pressure(:,cell_id),'.-k') ; hold on;
 plot(time,Analytical(:,cell_id),'-r');
 xlabel(' time');
 ylabel(strcat('Pressure at cell #', string(cell_id)));
+title(strcat('Pressure versus time at cell #',string(cell_id)));
 legend('Numerical','Analytical');
 
 % Plot relative error at a given element / cell
@@ -103,4 +111,5 @@ rel_error=abs(Analytical(:,10)-pressure(:,10))./Analytical(:,10);
 figure(3)
 plot(time,rel_error); hold on;
 xlabel('time');
-ylabel(strcat('relative error on Pressure at cell #', string(cell_id)));
+ylabel(strcat('relative error at cell #', string(cell_id)));
+title(strcat('relative error on Pressure at cell #', string(cell_id)));
