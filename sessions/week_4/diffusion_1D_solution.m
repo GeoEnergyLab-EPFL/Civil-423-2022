@@ -45,7 +45,7 @@ L=L/h^2.;
 %% Theta-method and numerical solution
 
 theta=.8; % theta parameter - time integration scheme choice (theta in [0,1])
-time_step=30*h^2./2.; % Size of the time step as times * CFL condition   
+time_step=30*h^2./(2.*c); % Size of the time step as times * CFL condition   
 tMax=1.; % Maximum time up to which we seek the solution
 iter_max=2000; % Maximum number of iterations 
 
@@ -67,7 +67,7 @@ j=0;
 while tn<tMax && j<=iter_max
     j=j+1;
     tn=tn+time_step; % Increase the time by delta t
-    dp=(Id-theta*time_step*L)\(time_step*L*po);  % Compute the increment of
+    dp=(Id-theta*c*time_step*L)\(c*time_step*L*po);  % Compute the increment of
                                                  % pressure dp
     po=po+dp; % Adding to the previous pressure
     pressure(j+1,:)=po; % Store the results in the corresponding pressure
