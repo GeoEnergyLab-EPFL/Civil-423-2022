@@ -10,22 +10,6 @@
 
 %% MESH
 
-% Outer circle - Reservoir boundary 
-% Here you have to define the outer boundary of the mesh 
-
-R = +30; % reservoir radius
-Nr = 25; % number of faces of the polygon approximating the circle
-arc_r = 2.*pi/Nr; % angle related to each polygon face
-
-xcir_r = ----------; % x coordinate of each node
-ycir_r = ----------; % y coordinate of each node
-node_r = [xcir_r,ycir_r]; % matrix with (x,y) coordinates of nodes     
-
-% edges of each polygon face
-edge_r = zeros(Nr,2);
-edge_r(:,1) = ------; 
-edge_r(:,2) = ------; 
-
 % Inner circle - Wellbore boundary 
 % Here you have to define the inner boundary of the mesh 
 
@@ -42,31 +26,46 @@ edge_w = zeros(Nw,2);
 edge_w(:,1) = -----; 
 edge_w(:,2) = -----; 
 
+% Outer circle - Reservoir boundary 
+% Here you have to define the outer boundary of the mesh 
+
+R = rw*30;  % reservoir radius
+Nr = 25;    % number of faces of the polygon approximating the circle
+arc_r = 2.*pi/Nr; % angle related to each polygon face
+
+xcir_r = ----------; % x coordinate of each node
+ycir_r = ----------; % y coordinate of each node
+node_r = [xcir_r,ycir_r]; % matrix with (x,y) coordinates of nodes     
+
+% edges of each polygon face
+edge_r = zeros(Nr,2);
+edge_r(:,1) = ------; 
+edge_r(:,2) = ------; 
+
 % Finally, we put together all the boundaries of the domain
 node = [node_r; node_w];
 edge = [edge_r; edge_w];
 
-% call mesh-generator MESH2D - download it at https://ch.mathworks.com/matlabcentral/fileexchange/25555-mesh2d-delaunay-based-unstructured-mesh-generation
+% call mesh-generator MESH2D
 opts.kind = 'delfront';
-% opts.rho2 = +1.0 ;
-% opts.siz1 = 1.33;
-% opts.siz2 = 1.3;
  
 h_x = 2; %% Max elt area -> control the refinement of the mesh here
-[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = refine2(node,edge,[],opts,h_x) ;
+[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = ...
+    refine2(node,edge,[],opts,h_x) ;
 % This time we use smooth2 function to "smooth" the mesh
-[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = smooth2(mesh.nodes,mesh.edge,mesh.connectivity,mesh.id);
+[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = ...
+    smooth2(mesh.nodes,mesh.edge,mesh.connectivity,mesh.id);
 
 % Graph to plot the mesh
 figure (1);
-    patch('faces',mesh.connectivity(:,1:3),'vertices',mesh.nodes, ...
-        'facecolor','w', ...
-        'edgecolor',[.2,.2,.2]) ;
-    hold on; axis image off;
-    patch('faces',edge(:,1:2),'vertices',node, ...
-        'facecolor','w', ...
-        'edgecolor',[.1,.1,.1], ...
-        'linewidth',1.5) ;
+patch('faces',mesh.connectivity(:,1:3),'vertices',mesh.nodes, ...
+    'facecolor','w', ...
+    'edgecolor',[.2,.2,.2]) ;
+hold on; axis image off;
+patch('faces',edge(:,1:2),'vertices',node, ...
+    'facecolor','w', ...
+    'edgecolor',[.1,.1,.1], ...
+    'linewidth',1.5) ;
 
 %% Boundary conditions
 
@@ -76,7 +75,8 @@ figure (1);
 % is contant along the perimeter of the wellbore.
 
 % First, we find the nodes along the perimeter of the wellbore
-well_edge = find(abs(mesh.nodes(:,1).^2+mesh.nodes(:,2).^2 - rw^2) < .0001);
+well_edge = find(abs(mesh.nodes(:,1).^2+mesh.nodes(:,2).^2 - rw^2) ...
+    < .0001);
 
 % Use this figure to check that your nodes are correctly founded
 figure (2);
@@ -102,16 +102,17 @@ perm = 1; % Permeability coefficient
 S = 1; % Specific storage
 [M] = AssembleMassMatrix(mesh,S,'2D');
 
-% We solve the system of equations at each time step
+% Solving the system of equations at each time step
 
-theta=.8; % theta parameter - time integration scheme choice (theta in [0,1])
+theta=.8; % theta parameter - time integration scheme choice 
+          % (theta in [0,1])
 tMax=500; % maximum time up to which we seek the solution
 iter_max=2000; % maximum number of iterations 
 time_step=tMax/iter_max; % time step
 
 po = zeros(n_nodes,1);  % initial pore pressure
 pressure = [ ]; % Initialization of pore pressure solution matrix (with the 
-% solution of each time step (1 step = 1 row)
+                % solution of each time step (1 step = 1 row)
 pressure(1,:) = po; % Initial condition
 
 tn=0.; % Initial time = 0
@@ -126,7 +127,8 @@ while tn<tMax && j<=iter_max
     tn = -----; % Increase the time by delta t
     dp = -----; % Compute the increment of pressure dp
     po = -----; % Adding to the previous pressure
-    pressure = -----; % Store the results in the corresponding pressure matrix
+    pressure = -----; % Store the results in the corresponding pressure
+                      % matrix
     time = -----; % Store the time in the corresponding vector
 end
 

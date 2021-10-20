@@ -10,24 +10,6 @@
 
 %% MESH
 
-% Outer circle - Reservoir boundary 
-% Here you have to define the outer boundary of the mesh 
-
-R = +30; % reservoir radius
-Nr = 25; % number of faces of the polygon approximating the circle
-arc_r = 2.*pi/Nr; % angle related to each polygon face
-
-% <<<DELETE
-xcir_r = R * cos(0:arc_r:2*pi - arc_r)'; % x coordinate of each node
-ycir_r = R * sin(0:arc_r:2*pi - arc_r)'; % y coordinate of each node
-node_r = [xcir_r,ycir_r]; % matrix with (x,y) coordinates of nodes     
-
-% edges of each polygon face
-edge_r = zeros(Nr,2);
-edge_r(:,1) = [1:1:Nr]'; 
-edge_r(:,2) = [2:1:Nr,1]'; 
-% DELETE>>>>>>
-
 % Inner circle - Wellbore boundary 
 % Here you have to define the inner boundary of the mesh 
 
@@ -35,7 +17,6 @@ rw = +1.; % wellbore radius
 Nw = 25; % number of faces of the polygon approximating the circle
 arc_w = 2.*pi/Nw; % angle related to each polygon face
 
-% <<<DELETE
 xcir_w = rw * cos(0:arc_w:2*pi - arc_w)'; % x coordinate of each node
 ycir_w = rw * sin(0:arc_w:2*pi - arc_w)'; % y coordinate of each node
 node_w = [xcir_w,ycir_w]; % matrix with (x,y) coordinates of nodes         
@@ -43,35 +24,50 @@ node_w = [xcir_w,ycir_w]; % matrix with (x,y) coordinates of nodes
 % edges of each polygon face
 edge_w = zeros(Nw,2);
 edge_w(:,1) = [1:1:Nw]'; 
-edge_w(:,2) = [2:1:Nw,1]'; 
-edge_w = edge_w+size(node_r,1);
-% DELETE>>>>>>
+edge_w(:,2) = [2:1:Nw,1]';
+
+% Outer circle - Reservoir boundary 
+% Here you have to define the outer boundary of the mesh 
+
+rw = 1;     % wellbore radius
+R = rw*30;  % reservoir radius
+Nr = 25;    % number of faces of the polygon approximating the circle
+arc_r = 2.*pi/Nr; % angle related to each polygon face
+
+xcir_r = R * cos(0:arc_r:2*pi - arc_r)'; % x coordinate of each node
+ycir_r = R * sin(0:arc_r:2*pi - arc_r)'; % y coordinate of each node
+node_r = [xcir_r,ycir_r]; % matrix with (x,y) coordinates of nodes     
+
+% edges of each polygon face
+edge_r = zeros(Nr,2);
+edge_r(:,1) = [1:1:Nr]'; 
+edge_r(:,2) = [2:1:Nr,1]';
+edge_r = edge_w+size(node_w,1);
 
 % Finally, we put together all the boundaries of the domain
-node = [node_r; node_w];
-edge = [edge_r; edge_w];
+node = [node_w; node_r];
+edge = [edge_w; edge_r];
 
-% call mesh-generator MESH2D - download it at https://ch.mathworks.com/matlabcentral/fileexchange/25555-mesh2d-delaunay-based-unstructured-mesh-generation
+% call mesh-generator MESH2D
 opts.kind = 'delfront';
-% opts.rho2 = +1.0 ;
-% opts.siz1 = 1.33;
-% opts.siz2 = 1.3;
  
 h_x = 2; %% Max elt area -> control the refinement of the mesh here
-[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = refine2(node,edge,[],opts,h_x) ;
+[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = ...
+    refine2(node,edge,[],opts,h_x) ;
 % This time we use smooth2 function to "smooth" the mesh
-[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = smooth2(mesh.nodes,mesh.edge,mesh.connectivity,mesh.id);
+[mesh.nodes,mesh.edge,mesh.connectivity,mesh.id] = ...
+    smooth2(mesh.nodes,mesh.edge,mesh.connectivity,mesh.id);
 
 % Graph to plot the mesh
 figure (1);
-    patch('faces',mesh.connectivity(:,1:3),'vertices',mesh.nodes, ...
-        'facecolor','w', ...
-        'edgecolor',[.2,.2,.2]) ;
-    hold on; axis image off;
-    patch('faces',edge(:,1:2),'vertices',node, ...
-        'facecolor','w', ...
-        'edgecolor',[.1,.1,.1], ...
-        'linewidth',1.5) ;
+patch('faces',mesh.connectivity(:,1:3),'vertices',mesh.nodes, ...
+    'facecolor','w', ...
+    'edgecolor',[.2,.2,.2]) ;
+hold on; axis image off;
+patch('faces',edge(:,1:2),'vertices',node, ...
+    'facecolor','w', ...
+    'edgecolor',[.1,.1,.1], ...
+    'linewidth',1.5) ;
 
 %% Boundary conditions
 
@@ -81,7 +77,8 @@ figure (1);
 % is contant along the perimeter of the wellbore.
 
 % First, find the nodes along the perimeter of the wellbore
-well_edge = find(abs(mesh.nodes(:,1).^2+mesh.nodes(:,2).^2 - rw^2) < .0001);
+well_edge = find(abs(mesh.nodes(:,1).^2+mesh.nodes(:,2).^2 - rw^2) ...
+    < .0001);
 
 % Use this figure to check that your nodes are correctly founded
 figure (2);
@@ -94,9 +91,8 @@ q = Q/(2*pi*rw); % specific discharge [m/s] (per unit thickness)
 n_nodes = length(mesh.nodes); % number of nodes
 f_q = zeros(n_nodes,1); % initialization of force vector
 
-% <<<DELETE
 f_q(well_edge) = q*(2*pi*rw)/Nw; % same amount of lumped flux at each node
-% DELETE>>>
+
 %% Finite element solution + Theta-method
 
 % Conductivity matrix
@@ -109,14 +105,15 @@ S = 1; % Specific storage
 
 % Solving the system of equations at each time step
 
-theta=.5; % theta parameter - time integration scheme choice (theta in [0,1])
+theta=.8; % theta parameter - time integration scheme choice 
+          % (theta in [0,1])
 tMax=500; % maximum time up to which we seek the solution
 iter_max=2000; % maximum number of iterations 
 time_step=tMax/iter_max; % time step
 
 po = zeros(n_nodes,1);  % initial pore pressure
 pressure = [ ]; % Initialization of pore pressure solution matrix (with the 
-% solution of each time step (1 step = 1 row)
+                % solution of each time step (1 step = 1 row)
 pressure(1,:) = po; % Initial condition
 
 tn=0.; % Initial time = 0
@@ -127,13 +124,14 @@ Id =speye(n_nodes,n_nodes); % Identity matrix necessary to solve by theta-method
 j=0;
 while tn<tMax && j<=iter_max
     j=j+1;
-    % <<<DELETE
     tn=tn+time_step; % Increase the time by delta t
-    dp=(M+theta*time_step*C)\(f_q*time_step-C*po*time_step); % Compute the increment of pressure dp
+    dp=(M+theta*time_step*C)\(f_q*time_step-C*po*time_step); % Compute the
+                                                             % increment of
+                                                             % pressure dp
     po=po+dp; % Adding to the previous pressure
-    pressure(j+1,:)=po'; % Store the results in the corresponding pressure matrix
+    pressure(j+1,:)=po'; % Store the results in the corresponding pressure 
+                         % matrix
     time(j+1)=tn; % Store the time in the corresponding vector
-    % DELETE>>>
 end
 
 %% Graphs
@@ -180,15 +178,17 @@ axis image off;
 % Now you have to compare the numerical and analytical solutions
 
 % Compute here the analytical solutions
-% <<<DELETE
-line_source = line_source_solution(mesh.nodes,time,Q,perm,S); % early-time line-source solution
-cylindrical_source = cylindrical_source_solution(mesh.nodes,time,Q,perm,S,rw,R); % steady-state cylindrical-source solution
-% DELETE>>>
+line_source = line_source_solution(mesh.nodes,time,Q,perm,S); % early-time 
+                                                              % line-source
+                                                              % solution
+cylindrical_source = ...
+    cylindrical_source_solution(mesh.nodes,time,Q,perm,S,rw,R); 
+    % steady-state cylindrical-source solution
+
 
 % Create here the 3 graphs requested and plot at each graph the numerical 
 % and both analytical solutions
 
-% <<<<DELETE
 % First graph, at wellbore
 nn = 1;
 figure(5)
@@ -224,4 +224,3 @@ xlabel(' time');
 ylabel('Pressure at the middle');
 legend('Numerical','Early-time','Pseudo Steady-state','Location','southeast');
 xlim([0 tMax])
-% DELETE>>>>>
