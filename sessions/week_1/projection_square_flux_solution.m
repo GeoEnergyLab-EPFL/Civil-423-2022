@@ -74,29 +74,23 @@ rel_q_y(ky)=abs_q_y(ky);
 
 
 % Plots 
-
 figure(3)
-title(' Proj Q_x - linear elt');
-
 subplot(2,1,1), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1))
 subplot(2,1,2), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),q_x_true(:,1)) 
-
+title(' Proj Q_x - linear elt');
 
 figure(4)
-title(' Proj Q_y - linear elt');
 subplot(2,1,1),trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,2))
 subplot(2,1,2), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),q_y_true(:)) 
- 
+title(' Proj Q_y - linear elt');
 
 figure(5)
-title(' Absolute error on flux');
-
 subplot(2,1,1), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),abs_q_x)
 subplot(2,1,2), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),abs_q_y) 
-
+title(' Absolute error on flux');
 
 figure(6)
-title(' relative error on flux');
-
 subplot(2,1,1), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),rel_q_x)
 subplot(2,1,2), trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),rel_q_y) 
+title(' relative error on flux');
+
