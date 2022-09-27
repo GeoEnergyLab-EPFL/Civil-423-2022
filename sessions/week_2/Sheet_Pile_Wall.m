@@ -14,7 +14,7 @@ H=.2;T=.4;S=.5;B=.5;D=1; % see figure 1, exercise #2. We are solving
 
 % coordinates of the different vertices that define the domain boundary.
 % The origin is in the bottom-left corner.
-x_exc=S+B; % middle point of excavation, x coordinate (symmetrical problem)
+x_exc=S+B; % right bottom point of excavation, x coordinate (symmetrical problem)
 y_exc=D-H; % excavation height, y coordinate
 x_wall=S; % horizontal position of sheet pile wall, x coordinate
 y_wall=D-(H+T); % height where sheet pile wall bottom is located, y coordinate
@@ -60,7 +60,7 @@ figure(1);
 % Here you have to impose the boundary condition of the problem
 
 % First, you have to find the nodes that are located along each boundary
-% For example, the nodes related to the sheet pile wall are find in the
+% For example, the nodes related to the sheet pile wall are found in the
 % following way...
 
 sheet_pile=find((mesh.nodes(:,1)==x_wall-t_wall/2 & mesh.nodes(:,2)>=y_wall)...
@@ -96,7 +96,7 @@ plot(mesh.nodes(top_excavation,1),mesh.nodes(top_excavation,2),'ob');
 % Second, you have to impose the boundary conditions
 
 % In the case of left, bottom and right edges, and sheet pile wall as well,
-% the no flow boundary condition is automatically satisfy (natural 
+% the no flow boundary condition is automatically satisfied (natural 
 % boundary condition) (note that finding the nodes of these boundaries was 
 % useless in the end). 
 
@@ -109,16 +109,16 @@ h_top_ground % =
 
 % ... and now the boundary condition at the excavation bottom
 
-h_top_excavation % =
+h_top_excavation % = 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Deleting duplication of fixed nodes. 
+% Defining a list of fixed nodes while avoiding the node duplicates. 
 [nodes_fixed, ia, ic]=unique([top_ground;top_excavation]) ; 
 h_aux=[h_top_ground;h_top_excavation];
 h_fixed=h_aux(ia); 
-% Note: Sometimes some boundaries where we fie values share some nodes 
+% Note: Sometimes some boundaries where we fix values share some nodes 
 % (usually at the corners of the domain), so we have to delete the 
-% duplication. This is not our case, since top_ground and top_excavation 
+% duplicates. This is not our case, since top_ground and top_excavation 
 % do not share actually any node.
 
 %% Solution for piezometric head, h [m]
@@ -160,13 +160,6 @@ h = zeros(length(mesh.nodes(:,1)),1);
 h(nodes_unknows)=h_unknows;
 h(nodes_fixed)=h_fixed;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Exit gradient
-% The value of the exit gradient is...
-exitnode % =
-Exit_Gradient % =
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % plotting solution
 figure(4)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),h)
@@ -177,6 +170,13 @@ trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),h)
 % week)
 
 Q =ProjectFlux(mesh,'2D',K,h); %[L/s]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exit gradient
+% The value of the exit gradient is...
+exitnode % =
+Exit_Gradient % =
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % plotting flux_x
 
