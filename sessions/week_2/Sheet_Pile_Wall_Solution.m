@@ -12,7 +12,7 @@ H=.2;T=.4;S=.5;B=.5;D=1; % see figure 1, exercise #2. We are solving
 % the problem for any of these values, you will have to analyze two 
 % particular cases by the end of the exercise.
 
-% coordinates of the different vertices that define the domain boundary.
+% coordinates of the different vertices that define the domain boundary
 % The origin is in the bottom-left corner.
 x_exc=S+B; % right bottom point of excavation, x coordinate (symmetrical problem)
 y_exc=D-H; % excavation height, y coordinate
@@ -29,11 +29,11 @@ node_coor = [ 0 0 ; x_exc 0 ; x_exc y_exc ; x_wall+t_wall/2 y_exc ;...
 edge = [];
 
 for e=1:7
-    edge = [ edge ; e e+1 ];
+edge = [ edge ; e e+1 ];
 end
 edge = [ edge ; 8  1 ];
 
-% call mesh-generator MESH2D - 
+% call mesh-generator MESH2D - download it at https://ch.mathworks.com/matlabcentral/fileexchange/25555-mesh2d-delaunay-based-unstructured-mesh-generation
  opts.kind = 'delfront';
 % opts.rho2 = +1.0 ;
 % opts.siz1 = 1.33;
@@ -54,6 +54,7 @@ figure(1);
         'facecolor','w', ...
         'edgecolor',[.1,.1,.1], ...
         'linewidth',2.0) ;
+title(' Mesh ');
  
 %% Boundary conditions
 
@@ -70,17 +71,14 @@ sheet_pile=find((mesh.nodes(:,1)==x_wall-t_wall/2 & mesh.nodes(:,2)>=y_wall)...
 % Now you have to complete the code by finding the nodes related to the
 % remaining boundaries
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-left_edge % =
-right_edge % =
-bottom_edge % =
-top_ground % =
-top_excavation % =
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+left_edge=find(mesh.nodes(:,1)==0);
+right_edge=find(mesh.nodes(:,1)==x_exc);
+bottom_edge=find(mesh.nodes(:,2)==0);
+top_ground=find(mesh.nodes(:,2)==y_ground);
+top_excavation=find(mesh.nodes(:,2)==y_exc & mesh.nodes(:,1)>=x_wall);
 
 % plotting boundary nodes
 
-figure(2)
 plot(mesh.nodes(sheet_pile,1),mesh.nodes(sheet_pile,2),'or');
 hold on
 plot(mesh.nodes(left_edge,1),mesh.nodes(left_edge,2),'ob');
@@ -97,20 +95,21 @@ plot(mesh.nodes(top_excavation,1),mesh.nodes(top_excavation,2),'ob');
 
 % In the case of left, bottom and right edges, and sheet pile wall as well,
 % the no flow boundary condition is automatically satisfied (natural 
-% boundary condition) (note that finding the nodes of these boundaries was 
+% boundary condition) (note that finding the nodes of this boundaries was 
 % useless in the end). 
 
 % <<<Reminder: h = p/gamma_w + y>>>
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You have to define now the boundary condition at the ground level 
 
-h_top_ground % =
+h1=0; % we can define any piezometric head h1
+h_top_ground=h1+mesh.nodes(top_ground,2);
 
 % ... and now the boundary condition at the excavation bottom
 
-h_top_excavation % = 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+h2=0; % we can define any piezometric head h2
+h_top_excavation=h2+mesh.nodes(top_excavation,2);
+%top_exc p = gamma_w h2 --> h = h2 + y_exc
 
 % Defining a list of fixed nodes while avoiding the node duplicates. 
 [nodes_fixed, ia, ic]=unique([top_ground;top_excavation]) ; 
@@ -125,14 +124,12 @@ h_fixed=h_aux(ia);
 
 % computing conductivity matrix
 
-K=[1]; % Hydraulic conductivity of each material, [L/T]
-
+K=[1]; % Hydraulic conductivity of each material, [L/s]
 % In our case is an scalar, since we are using only one material and we
 % assume that it is isotropic and homogeneous
-[C] = AssembleConductivityMatrix(mesh,K,'2D'); % Note: the assembly of 
+[C] = AssembleConductivityMatrix(mesh,K,'2D'); % Note: the assemblage of 
 % the conductivity matrix follows the same procedure that you solved the 
-% past week to assemble the mass matrix (projection of flux). Have a look
-% at the routine nonetheless.
+% past week to assemble the mass matrix (projection of flux).
 
 % Now you have to complete the code and solve the linear system of
 % equations to obtain the piezometric head at all the nodes
@@ -144,59 +141,104 @@ K=[1]; % Hydraulic conductivity of each material, [L/T]
 
 nodes_unknows=setdiff(1:length(mesh.nodes),nodes_fixed)';
 
-% Now, you have to complete the code and solve the final system 
+% Now, you have to complete the code and solve the matrix system 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compute the force vector
-f % =
+f = -C(nodes_unknows,nodes_fixed)*h_fixed;
 
 % Compute the unknown piezometric heads
-h_unknows % =
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+h_unknows = C(nodes_unknows,nodes_unknows)\f;
 
-% And finally we build the solution for all the nodes by gluing the solved
-% h and the dirichlet boundary conditions
+% And finally we build the solution for all the nodes
 h = zeros(length(mesh.nodes(:,1)),1);
 h(nodes_unknows)=h_unknows;
 h(nodes_fixed)=h_fixed;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Exit gradient
-% The value of the exit gradient is...
-exitnode % =
-Exit_Gradient % =
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % plotting solution
-figure(4)
+figure(2)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),h)
+title(' Hydraulic head - h');
 
-%% Projection for flux -> here we use what we did last week
+%% Projection for flux
 
 % estimating flux at the nodes (You finished coding up this function past
 % week)
 
 Q =ProjectFlux(mesh,'2D',K,h); %[L/s]
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-- To complete --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Exit gradient
 % The value of the exit gradient is...
-exitnode % =
-Exit_Gradient % =
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+exitnode = find(mesh.nodes(:,1)==x_wall+t_wall/2 & mesh.nodes(:,2)==y_exc);
+Exit_Gradient=Q(exitnode,2)
 
 % plotting flux_x
+figure(3)
 
-figure(5)
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1))
+title(' Proj Q_x - linear elt');
 
 % plotting flux_y
 % You can see the value for the exit gradient in this graph
 
-figure(6)
+figure(4)
+
 trisurf(mesh.connectivity,mesh.nodes(:,1),mesh.nodes(:,2),Q(:,2))
+title(' Proj Q_y - linear elt');
 
 % plotting flux as vector
 
-figure(7)
+figure(5)
 quiver(mesh.nodes(:,1),mesh.nodes(:,2),Q(:,1),Q(:,2),'AutoScaleFactor',3)
+title(' Flux as a vector ');
+
+%% Plotting equipotential lines and streamlines (need to be improved and 
+% delete the part of the graph that is not part of the domain)
+
+figure(6)
+
+PlotEquipotential(h,mesh.nodes,y_exc+h2:.01:y_ground+h1,.005)
+hold on
+startx=0:.05:x_wall;starty=y_ground*ones(size(startx));
+PlotStreamlines(Q,mesh.nodes,startx,starty,.005)
+hold on
+patch('faces',edge,'vertices',node_coor, ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.1], ...
+        'linewidth',2.0) ;
+title(' Streamlines ');
+
+
+function PlotEquipotential(solution,coor,lines,resolution)
+% solution: solution, piezometric head in this case, at all the nodes 
+%      number_nodes x 1 
+% coor: coordinates of nodes, number_nodes x 2 (x,y)
+% lines: vector containing the value of the desired equipotential lines 
+% resolution: recommended value = 0.005. The lower the value, the more 
+%      grided points are created in order to build get its interpolated 
+%      to thus compute the equipotential lines
+xmax=max(coor(:,1));xmin=min(coor(:,1));
+ymax=max(coor(:,2));ymin=min(coor(:,2));
+[Xgrid,Ygrid] = meshgrid(linspace(xmin,xmax,fix(1/resolution)),...
+    linspace(ymin,ymax,fix(1/resolution)));
+Hgrid = griddata(coor(:,1),coor(:,2),solution,Xgrid,Ygrid); 
+contour(Xgrid,Ygrid,Hgrid,lines,'linewidth',1.5,'color',[.3 .3 .3])
+end
+
+function PlotStreamlines(solution,coor,startx,starty,resolution)
+% solution: solution, specific discharge in this case, at all the nodes 
+%      number_nodes x 2 (q_x,q_y) 
+% coor: coordinates of nodes, number_nodes x 2 (x,y)
+% startx: vector containing the value of the desired equipotential lines 
+% resolution: recommended value = 0.005. The lower the value, the more 
+%      grided points are created in order to build get its interpolated 
+%      to thus compute the equipotential lines
+xmax=max(coor(:,1));xmin=min(coor(:,1));
+ymax=max(coor(:,2));ymin=min(coor(:,2));
+[Xgrid,Ygrid] = meshgrid(linspace(xmin,xmax,fix(1/resolution)),...
+    linspace(ymin,ymax,fix(1/resolution)));
+Q_xgrid = griddata(coor(:,1),coor(:,2),solution(:,1),Xgrid,Ygrid);
+Q_ygrid = griddata(coor(:,1),coor(:,2),solution(:,2),Xgrid,Ygrid);
+graph=streamline(Xgrid,Ygrid,Q_xgrid,Q_ygrid,startx,starty);
+set(graph,'linewidth',1.5,'color',[.6 .6 .6])
+end 
