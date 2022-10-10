@@ -4,7 +4,7 @@
 % problem of transient flow by the finite volume / finite difference method 
 % and using the theta-method for the time integration scheme.
 
-% The problem to solve is the pore pressure diffusion of the Terzagui's
+% The problem to solve is the pore pressure diffusion of the Terzaghi's
 % consolidation problem.
 
 %% Mesh
@@ -27,7 +27,7 @@ L=sparse(ne,ne); % Initialization of L Matrix
 %% Theta-method and numerical solution
 
 theta=.8; % theta parameter - time integration scheme choice (theta in [0,1])
-time_step=30*h^2./(2.*c); % Size of the time step as times * CFL condition   
+time_step=30*h^2./2.; % Size of the time step as times * CFL condition   
 tMax=1.; % Maximum time up to which we seek the solution
 iter_max=2000; % Maximum number of iterations 
 
