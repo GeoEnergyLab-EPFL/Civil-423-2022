@@ -56,7 +56,7 @@ left_edge_unsat=left_edge(il);
 [il]=find(mesh.nodes(left_edge,2)<hw);
 left_edge_sat=left_edge(il);
 
-% We now combine all nodes where we are either sure or do not know yet if
+% We now combine all nodes where we are either sure or do no know yet if
 % they are unsaturated. This is the combination of the nodes above water
 % level on the left side (unsaturated), the ones on top (unsaturated), and
 % the nodes on the right/downstream side. The nodes on the right side can
@@ -65,7 +65,7 @@ left_edge_sat=left_edge(il);
 [nodes_unsat, ia_unsat, ic]=unique([left_edge_unsat;top_edge;right_edge;]);
 
 % plotting boundary nodes
-plot(mesh.nodes(left_edge_sat,1),mesh.nodes(left_edge_sat,2),'ob');
+plot(mesh.nodes(left_edge_unsat,1),mesh.nodes(left_edge_unsat,2),'ob');
 hold on
 plot(mesh.nodes(nodes_unsat,1),mesh.nodes(nodes_unsat,2),'or');
 hold on
