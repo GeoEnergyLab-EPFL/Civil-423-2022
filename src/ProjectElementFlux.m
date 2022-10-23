@@ -38,7 +38,7 @@ if isa(eltObj,'ElementTri3')
             
             for i=2:length(Wl)
                 [N]=Na(xeta(i,:),eltObj);
-                [DNaDx,j]=GradN(xeta,eltObj);
+                [DNaDx,j]=GradN(xeta(i,:),eltObj);
                 qaux=-Cond*DNaDx*usol;
                 %disp(size(qaux));
                 
@@ -56,9 +56,59 @@ if isa(eltObj,'ElementTri3')
             fel_x=(2*pi*X(1))*Wl(1)*j*(N'*qaux(1));
             fel_y=(2*pi*X(1))*Wl(1)*j*(N'*qaux(2));
             
+            for i=2:length(Wl)
+                [N]=Na(xeta(i,:),eltObj);
+                [DNaDx,j]=GradN(xeta(i,:),eltObj);
+                [X]=Mapx(xeta(i,:),eltObj);
+                qaux=-Cond*DNaDx*usol;
+                fel_x=fel_x+(2*pi*X(1))*Wl(i)*j*(N'*qaux(1));
+                fel_y=fel_y+(2*pi*X(1))*Wl(i)*j*(N'*qaux(2));
+            end
+    end
+elseif isa(eltObj,'ElementTri6')
+    
+    xeta = [0.1666666667,0.7886751346;
+         0.6220084679,0.2113248654;
+         0.4465819874*10^(-1),0.7886751346;
+         0.1666666667,0.2113248654];
+
+    Wl= [0.5283121635*10^(-1);
+             0.1971687836;
+             0.5283121635*10^(-1);
+             0.1971687836];
+    
+    
+    switch eltObj.type
+        case '2D'
+            
+            [N]=Na(xeta(1,:),eltObj);
+            [DNaDx,j]=GradN(xeta(1,:),eltObj);
+            qaux=-Cond*DNaDx*usol;
+            fel_x=Wl(1)*j*(N'*qaux(1));
+            fel_y=Wl(1)*j*(N'*qaux(2));
+            
+            for i=2:length(Wl)
+                [N]=Na(xeta(i,:),eltObj);
+                [DNaDx,j]=GradN(xeta(i,:),eltObj);
+                qaux=-Cond*DNaDx*usol;
+                
+                fel_x=fel_x+Wl(i)*j*(N'*qaux(1));
+                fel_y=fel_y+Wl(i)*j*(N'*qaux(2));
+                
+            end
+            
+        case 'Axis'
+            
+            [X]=Mapx(xeta(1,:),eltObj);
+            [N]=Na(xeta(1,:),eltObj);
+            [DNaDx,j]=GradN(xeta,eltObj);
+            qaux=-Cond*DNaDx*usol;
+            fel_x=(2*pi*X(1))*Wl(1)*j*(N'*qaux(1));
+            fel_y=(2*pi*X(1))*Wl(1)*j*(N'*qaux(2));
+            
             for i=2:3
                 [N]=Na(xeta(i,:),eltObj);
-                [DNaDx,j]=GradN(xeta,eltObj);
+                [DNaDx,j]=GradN(xeta(i,:),eltObj);
                 [X]=Mapx(xeta(i,:),eltObj);
                 qaux=-Cond*DNaDx*usol;
                 fel_x=fel_x+(2*pi*X(1))*Wl(i)*j*(N'*qaux(1));

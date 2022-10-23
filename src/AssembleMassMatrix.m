@@ -20,7 +20,7 @@ switch nc
 end
    
 
-for e=1:length(mesh.connectivity)
+for e=1:length(mesh.connectivity(:,1))
        
      % get nodes of element e
      

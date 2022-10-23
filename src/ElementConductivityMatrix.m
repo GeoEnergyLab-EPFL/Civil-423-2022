@@ -36,13 +36,13 @@ function [kel]=ElementConductivityMatrix(eltObj,Cond)
             1./6 2./3];
         Wl=[1./6 1./6 1./6];
         [DNaDx,j]=GradN(xeta(1,:),eltObj);
-        kel=Wl(1)*j*DNaDx'*Cond*DNaDx;
         
         switch eltObj.type
             case '2D'
                 kel=Wl(1)*j*DNaDx'*Cond*DNaDx;
             case 'Axis'
-                error('Axis-symmetrie not yet implemented');
+                [X]=Mapx(xeta(1,:),eltObj);
+                kel=(2*pi*X(1))*Wl(1)*j*DNaDx'*Cond*DNaDx;
         end
         
         for i = 2:length(Wl)
@@ -52,7 +52,8 @@ function [kel]=ElementConductivityMatrix(eltObj,Cond)
                 case '2D'
                     kel=kel + Wl(i)*j*DNaDx'*Cond*DNaDx;
                 case 'Axis'
-                    error('Axis-symmetrie not yet implemented');
+                    [X]=Mapx(xeta(1,:),eltObj);
+                    kel=kel + (2*pi*X(1))*Wl(i)*j*DNaDx'*Cond*DNaDx;
             end
         end
     else

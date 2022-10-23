@@ -1,4 +1,4 @@
-% Exercice 1.1  - Computational Geomechanics 2019-20
+% Exercice 1.1  - Computational Geomechanics  
 % 
 % The goal of this exercise is to understand the so-called "projection"
 % procedure which consist in obtaining/projecting the flux at the nodes

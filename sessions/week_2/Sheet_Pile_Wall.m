@@ -109,7 +109,7 @@ h_top_ground % =
 
 % ... and now the boundary condition at the excavation bottom
 
-h_top_excavation % = 
+h_top_excavation % =
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Defining a list of fixed nodes while avoiding the node duplicates. 

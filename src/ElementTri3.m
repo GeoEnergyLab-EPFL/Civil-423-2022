@@ -55,8 +55,8 @@ classdef ElementTri3
                     % 4 by 6 mat
                     B = [DNaDx(1,1)  0 DNaDx(1,2) 0 DNaDx(1,3) 0  ;...
                         0   DNaDx(2,1) 0 DNaDx(2,2) 0 DNaDx(2,3) ;...
-                        DNaDx(2,1) DNaDx(1,1) DNaDx(2,2) DNaDx(1,2) DNaDx(2,3) DNaDx(1,3)
-                        Nax(1)/xaux(1)  0.  Nax(2)/xaux(1) 0 Nax(3)/xaux(1) 0. ];                    
+                        DNaDx(2,1) DNaDx(1,1) DNaDx(2,2) DNaDx(1,2) DNaDx(2,3) DNaDx(1,3);...
+                        Nax(1)/xaux(1)  0.  Nax(2)/xaux(1) 0. Nax(3)/xaux(1) 0. ];                    
  
             end
             
@@ -65,9 +65,9 @@ classdef ElementTri3
          % x from xil
          function [Xaux]=Mapx(xil,obj)
             
-            Na_xi=[1-xil(1)-xil(2) xil(1) xil(2)] ;
-            Xaux=[Na_xi*(obj.xae(:,1)) Na_xi*(obj.xae(:,2))];  
-            
+             Na_xi=[1-xil(1)-xil(2) xil(1) xil(2)] ;
+             Xaux=[Na_xi*(obj.xae(:,1)) Na_xi*(obj.xae(:,2))];  
+
          end
          
          % shape function - for mass matrix etc.
@@ -102,11 +102,15 @@ classdef ElementTri3
             j=det(J);
             
         end
-        
-         
+                
         % Element volume
         function [vol]=Volume(obj)
             [vol]=Jacobian([0. 0. ],obj)/2.;
+        end
+           
+        % Element side length
+        function [l]=sidelength(ind,obj)
+            [l]=norm(obj.xae(ind(1),:)-obj.xae(ind(2),:));
         end
         
     end
