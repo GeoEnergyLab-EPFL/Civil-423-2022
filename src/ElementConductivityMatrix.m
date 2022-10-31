@@ -52,7 +52,7 @@ function [kel]=ElementConductivityMatrix(eltObj,Cond)
                 case '2D'
                     kel=kel + Wl(i)*j*DNaDx'*Cond*DNaDx;
                 case 'Axis'
-                    [X]=Mapx(xeta(1,:),eltObj);
+                    [X]=Mapx(xeta(i,:),eltObj);
                     kel=kel + (2*pi*X(1))*Wl(i)*j*DNaDx'*Cond*DNaDx;
             end
         end
