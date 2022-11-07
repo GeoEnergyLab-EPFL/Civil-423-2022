@@ -174,7 +174,7 @@ f_s
 % <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 %%Note: As we switch the stress field as a force we need to switch the
-%%side of the equation. This means that we got a minus signe in front. 
+%%side of the equation. This means that we got a minus sign in front. 
 %% Test on deformation
 %%We will balance now the entire stress field by the corresponding boundary
 %%tractions. As such one should observe that no displacements take place
@@ -440,11 +440,11 @@ ylabel('p');
 %% Compare the stresses at large time
 %%We will compare the stresses along the bottom boundary to the known
 %%analytical solution to see if our approximation is valid. Additionally,
-%%we will compare the evolutino of the displacement of the top node to the
+%%we will compare the evolution of the displacement of the top node to the
 %%large and early time solutions.
 
 %----- Getting the analytical solutions (displacements)
-% For the undrained displ we already obtained it previously.
+% For the undrained displacements, we already obtained it previously.
 AnalyticSolUx_d=-(Po.*Radius./(2.*g)+(3-4*nu).*Radius.*So./(2.*g));
 
 %----- Plotting disp evolution
