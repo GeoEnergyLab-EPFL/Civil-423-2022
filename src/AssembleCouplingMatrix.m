@@ -56,11 +56,10 @@ for e=1:length(meshP.connectivity(:,1))
          case 'Tri6'
              local_elt_P=ElementTri6(coorP,simultype);
      end
-     
-     % get element conductivity matrix
-     Ceel=ElementCouplingMatrix(local_elt_E,local_elt_P,alpha);
 
-    % 
+     % get element conductivity matrix
+     Ceel=ElementCouplingMatrix(local_elt_E,local_elt_P,alpha);   
+    
     Ce(n_dof_e,n_dof_p)=Ce(n_dof_e,n_dof_p)+Ceel;
     
  end

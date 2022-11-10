@@ -1,7 +1,7 @@
-function [Ceel]=ElementCouplingMatrix_exo(eltObj_E,eltObj_P,alpha)
+function [Ceel]=ElementCouplingMatrix(eltObj_E,eltObj_P,alpha)
 % Element level function
-% Building the element coupling matrix
-%  \int_element ( B)^T alpha  N
+% Building the element conductivity matrix
+%  \int_element (  N)^T rho  N
 %
 % inouts:
 % eltObj is an element object
@@ -24,12 +24,19 @@ if isa(eltObj_E,'ElementTri3')
     
     switch eltObj_E.type
         case '2D'
-%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>           
-
-
-
-%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>            
+            [B,j]=Bamat(xeta(1,:),eltObj_E);
+            Baux = B(1,:) + B(2,:);
+            [N]=Na(xeta(1,:),eltObj_P);
+            Ceel=Wl(1)*j*(Baux'*alpha*N);
+            for i=2:length(Wl)
+                [B,j]=Bamat(xeta(i,:),eltObj_E);
+                Baux = B(1,:) + B(2,:);
+                [N]=Na(xeta(i,:),eltObj_P);
+                Ceel=Ceel+Wl(i)*j*(Baux'*alpha*N);
+            end
+            
         case 'Axis'
+
             [B,j]=Bamat(xeta(1,:),eltObj_E);
             Baux = B(1,:) + B(2,:) + B(4,:);
             [X]=Mapx(xeta(1,:),eltObj_E);
@@ -58,12 +65,17 @@ elseif isa(eltObj_E,'ElementTri6')
     
     switch eltObj_E.type
         case '2D'
-%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>           
-
-
-
-
-%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    
+            [B,j]=Bamat(xeta(1,:),eltObj_E);
+            Baux = B(1,:) + B(2,:);
+            [N]=Na(xeta(1,:),eltObj_P);
+            Ceel=Wl(1)*j*(Baux'*alpha*N);
+            for i=2:length(Wl)
+                [B,j]=Bamat(xeta(i,:),eltObj_E);
+                Baux = B(1,:) + B(2,:);
+                [N]=Na(xeta(i,:),eltObj_P);
+                Ceel=Ceel+Wl(i)*j*(Baux'*alpha*N);
+            end
+            
         case 'Axis'
             [B,j]=Bamat(xeta(1,:),eltObj_E);
             Baux = B(1,:) + B(2,:) + B(4,:);
